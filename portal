@@ -1,0 +1,77 @@
+st.sidebar.title("🗂 Choose Task")
+task = st.sidebar.radio("What would you like to submit?", [
+    "🗣 Daily Conversation",
+    "🌐 Translate English to Telugu",
+    "✍️ Story or Opinion"
+])
+user_id = st.sidebar.text_input("Enter your name or ID")
+if task == "🗣 Daily Conversation":
+    st.header("Submit a Daily Telugu Conversation")
+    category = st.selectbox("Select a category", ["General", "News", "Health", "Education", "Entertainment"])
+    conversation = st.text_area("Type a daily Telugu dialogue or chat", height=150)
+    if st.button("Submit"):
+        save_data(user_id, "conversation", category, "", conversation)
+        st.success("Submitted successfully!")
+if task == "🌐 Translate English to Telugu":
+    st.header("Translate the following sentence to Telugu")
+
+    # Example English prompt
+    english_prompt = "I have a headache. Can you give me some medicine?"
+    st.markdown(f"**English Sentence:** {english_prompt}")
+    translation = st.text_area("Your Telugu Translation")
+    category = st.selectbox("Select a category", ["Health", "General", "Education", "News"])
+    if st.button("Submit"):
+        save_data(user_id, "translation", category, english_prompt, translation)
+        st.success("Translation submitted!")
+if task == "✍️ Story or Opinion":
+    st.header("Share your Story or Opinion in Telugu")
+    category = st.selectbox("Select a category", ["News", "Culture", "Daily Life", "Education", "Entertainment"])
+    story = st.text_area("Write your story, opinion, or experience in Telugu", height=200)
+    if st.button("Submit"):
+        save_data(user_id, "story", category, "", story)
+        st.success("Story submitted!")
+if st.sidebar.checkbox("⭐ View and Rate Others' Submissions"):
+    st.header("Rate Telugu Submissions")
+    df = pd.read_csv("data.csv")  # or load from JSON
+    for i, row in df.iterrows():
+        st.markdown(f"**User:** {row['user_id']}, **Category:** {row['category']}")
+        st.text(row['telugu_text'])
+        rating = st.slider("Rate this", 1, 5, key=f"rate_{i}")
+import pandas as pd
+from datetime import datetime
+
+def save_data(user_id, entry_type, category, input_text, telugu_text):
+    new_entry = {
+        "timestamp": datetime.now().isoformat(),
+        "user_id": user_id,
+        "type": entry_type,
+        "category": category,
+        "input_text": input_text,
+        "telugu_text": telugu_text,
+        "rating": 0
+    }
+    try:
+        df = pd.read_csv("data.csv")
+        df = df.append(new_entry, ignore_index=True)
+    except FileNotFoundError:
+        df = pd.DataFrame([new_entry])
+    df.to_csv("data.csv", index=False)
+import pandas as pd
+from datetime import datetime
+
+def save_data(user_id, entry_type, category, input_text, telugu_text):
+    new_entry = {
+        "timestamp": datetime.now().isoformat(),
+        "user_id": user_id,
+        "type": entry_type,
+        "category": category,
+        "input_text": input_text,
+        "telugu_text": telugu_text,
+        "rating": 0
+    }
+    try:
+        df = pd.read_csv("data.csv")
+        df = df.append(new_entry, ignore_index=True)
+    except FileNotFoundError:
+        df = pd.DataFrame([new_entry])
+    df.to_csv("data.csv", index=False)
